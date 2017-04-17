@@ -3,7 +3,7 @@
 
 #include "ST7735_AD_ClockDisplay.h"
 
-ST7335_AD_ClockDisplay::ST7335_AD_ClockDisplay(int8_t CS_PIN, int8_t DC_PIN, int8_t RST_PIN)
+ST7335_AD_ClockDisplay::ST7335_AD_ClockDisplay(uint8_t CS_PIN, uint8_t DC_PIN, uint8_t RST_PIN)
 : m_screen(CS_PIN, DC_PIN, RST_PIN){
     // TODO: Fix bug when setting date
 }
@@ -11,7 +11,7 @@ ST7335_AD_ClockDisplay::ST7335_AD_ClockDisplay(int8_t CS_PIN, int8_t DC_PIN, int
 ST7335_AD_ClockDisplay::~ST7335_AD_ClockDisplay(){
 }
 
-void ST7335_AD_ClockDisplay::drawDigitalClock(int color){
+void ST7335_AD_ClockDisplay::drawDigitalClock(uint16_t color){
 
     // Draw a black rect over the seconds value
     m_screen.fillRect(103, m_screen.height()/2-5, 12, 7, m_bgColor);
@@ -28,11 +28,11 @@ void ST7335_AD_ClockDisplay::drawDigitalClock(int color){
     }
 
     // Get the time value
-    char * hh = calloc(3, sizeof(char));
+    char * hh = (char*)calloc(3, sizeof(char));
     itoa(m_currentHour, hh, 10);
-    char * mm = calloc(3, sizeof(char));
+    char * mm = (char*)calloc(3, sizeof(char));
     itoa(m_currentMinute, mm, 10);
-    char * ss = calloc(3, sizeof(char));
+    char * ss = (char*)calloc(3, sizeof(char));
     itoa(m_currentSecond, ss, 10);
 
     // Set cursor position and text size for HH:MM
@@ -76,7 +76,7 @@ void ST7335_AD_ClockDisplay::drawDigitalClock(int color){
     }
 }
 
-void ST7335_AD_ClockDisplay::drawAnalogClock(int color){
+void ST7335_AD_ClockDisplay::drawAnalogClock(uint16_t color){
     cleanUpLines();
     if(m_date){
         drawDate(m_screen.width()/2, 100, m_fgColor);
@@ -88,19 +88,19 @@ void ST7335_AD_ClockDisplay::drawAnalogClock(int color){
     drawWatchFace(m_screen.width(), m_screen.height(), 62, color);
 }
 
-void ST7335_AD_ClockDisplay::drawWatchFace(int width, int height, int radius, int color){
+void ST7335_AD_ClockDisplay::drawWatchFace(uint8_t width, uint8_t height, uint8_t radius, uint16_t color){
     // Outer circle
     m_screen.drawCircle(width/2, height/2, radius, color);
     
     // Hour ticks
-    for(int i = 0; i < 360; i+=30){
+    for(uint8_t i = 0; i < 360; i+=30){
         float angle = i;
 
         angle = (angle * 3.14159265359 / 180); // Convert degrees to radians
-        int x = (width/2+(sin(angle)*radius));
-        int y = (height/2-(cos(angle)*radius));
-        int x2 = (width/2+(sin(angle)*(radius-10)));
-        int y2 = (height/2-(cos(angle)*(radius-10)));
+        uint8_t x = (width/2+(sin(angle)*radius));
+        uint8_t y = (height/2-(cos(angle)*radius));
+        uint8_t x2 = (width/2+(sin(angle)*(radius-10)));
+        uint8_t y2 = (height/2-(cos(angle)*(radius-10)));
         
         // Hack for the misbehaving hour ticks
         if(i == 90){
@@ -116,7 +116,7 @@ void ST7335_AD_ClockDisplay::drawWatchFace(int width, int height, int radius, in
     }
 }
 
-void ST7335_AD_ClockDisplay::drawWatchIndicators(int width, int height, int radius, int color){
+void ST7335_AD_ClockDisplay::drawWatchIndicators(uint8_t width, uint8_t height, uint8_t radius, uint16_t color){
     // Draw the hand that indicates seconds
     drawHand(width/2, height/2, (m_currentSecond*6), 50, 0, color);
     
@@ -127,7 +127,7 @@ void ST7335_AD_ClockDisplay::drawWatchIndicators(int width, int height, int radi
     drawHand(width/2, height/2, (m_currentHour*30), 30, 2, color);
 }
 
-void ST7335_AD_ClockDisplay::drawHand(int x, int y, float angle, int lenght, int index, int color){
+void ST7335_AD_ClockDisplay::drawHand(uint8_t x, uint8_t y, float angle, uint8_t lenght, uint8_t index, uint16_t color){
     // Move the hour hand like you
     // would expect of an analog clock
     if(index == 2){
@@ -141,8 +141,8 @@ void ST7335_AD_ClockDisplay::drawHand(int x, int y, float angle, int lenght, int
         Serial.print("Hour Value: ");
         Serial.println(m_currentHour);
     }
-    int xDestination = (x+(sin(angle)*lenght));
-    int yDestination = (y-(cos(angle)*lenght));
+    uint8_t xDestination = (x+(sin(angle)*lenght));
+    uint8_t yDestination = (y-(cos(angle)*lenght));
     
     // Handle limitations of drawLine
     if(isProblemArea(angle)){
@@ -213,8 +213,8 @@ bool ST7335_AD_ClockDisplay::isProblemArea(float angle){
     return (angle >= 0.0f && angle < 0.1f) || (angle > 4.71f && angle < 4.72f) || (angle > 10.96f && angle < 11.04f);
 }
 
-void ST7335_AD_ClockDisplay::drawDate(int x, int y, int color){
-    int currentDay = m_currentWeekday;
+void ST7335_AD_ClockDisplay::drawDate(uint8_t x, uint8_t y, uint16_t color){
+    uint8_t currentDay = m_currentWeekday;
 
     if(m_lastWeekday != currentDay){
         m_screen.fillRect(x-30, y-5, 62, 10, m_bgColor);
@@ -249,12 +249,12 @@ void ST7335_AD_ClockDisplay::drawDate(int x, int y, int color){
             break;
     } 
 
-    char *dayText = calloc(3, sizeof(char));
-    char *monthText = calloc(3, sizeof(char));
-    char *yearText = calloc(5, sizeof(char));
-    char *displayText = calloc(11, sizeof(char));
+    char *dayText = (char*)calloc(3, sizeof(char));
+    char *monthText = (char*)calloc(3, sizeof(char));
+    char *yearText = (char*)calloc(5, sizeof(char));
+    char *displayText = (char*)calloc(11, sizeof(char));
 
-    char *seperator = "/";
+    const char *seperator = "/";
 
     itoa(m_currentDay, dayText, 10);
     itoa(month(m_timer), monthText, 10);
@@ -281,14 +281,14 @@ void ST7335_AD_ClockDisplay::drawDate(int x, int y, int color){
     free(displayText);
 }
 
-void ST7335_AD_ClockDisplay::drawAlarm(int x, int y, int color){
-    char *infoText = "Alarm: ";
-    char *hourText = calloc(3, sizeof(char));
+void ST7335_AD_ClockDisplay::drawAlarm(uint8_t x, uint8_t y, uint16_t color){
+    const char *infoText = "Alarm: ";
+    char *hourText = (char*)calloc(3, sizeof(char));
     itoa(m_alarmHour, hourText, 10);
-    char *seperator = ":";
-    char *minuteText = calloc(3, sizeof(char));
+    const char *seperator = ":";
+    char *minuteText = (char*)calloc(3, sizeof(char));
     itoa(m_alarmMinute, minuteText, 10);
-    char * m_alarmText = calloc(strlen(infoText)
+    char * m_alarmText = (char*)calloc(strlen(infoText)
                                 + strlen(hourText)
                                 + strlen(seperator)
                                 + strlen(minuteText) + 3, sizeof(char));
@@ -310,7 +310,7 @@ void ST7335_AD_ClockDisplay::drawAlarm(int x, int y, int color){
     free(m_alarmText);
 }
 
-void ST7335_AD_ClockDisplay::drawTextCentered(int x, int y, const char *string, int size, int color){
+void ST7335_AD_ClockDisplay::drawTextCentered(uint8_t x, uint8_t y, const char *string, uint8_t size, uint16_t color){
     if(string != NULL){
         m_screen.setTextColor(color);
         m_screen.setTextSize(size);
@@ -326,27 +326,12 @@ void ST7335_AD_ClockDisplay::init(){
     m_screen.fillScreen(m_bgColor);
 }
 
-void ST7335_AD_ClockDisplay::setTime(int hour, int minute, int second, int day, int month, int year){
-    // setTime(hour, minute, second, day, month, year);
-    setTime(23, 58, 55, 11, 4, 2017);
+void ST7335_AD_ClockDisplay::setTime(uint8_t hour, uint8_t minute, uint8_t second, uint8_t day, uint8_t month, uint8_t year){
+    ::setTime(hour, minute, second, day, month, year);
     m_timer = now();
 }
 
 void ST7335_AD_ClockDisplay::drawClock(){
-    // TODO: REMOVE
-    // m_currentSecond++;
-    // if(m_currentSecond >= 60){
-        // m_currentSecond = 0;
-        // m_currentMinute++;
-    // }
-    // if(m_currentMinute >= 60){
-        // m_currentMinute = 0;
-        // m_currentHour++;
-    // }
-    // if(m_currentHour >= 24){
-        // m_currentHour = 0;
-    // }
-
     // Update timers
     m_timer = now();
     m_currentSecond = second(m_timer);
