@@ -307,6 +307,41 @@ void ST7335_AD_ClockDisplay::drawAlarm(uint8_t x, uint8_t y, uint16_t color){
     free(m_alarmText);
 }
 
+void ST7335_AD_ClockDisplay::setAlarm(uint16_t hour, uint16_t minute){
+    m_alarmHour = hour;
+    m_alarmMinute = minute;
+}
+
+void ST7335_AD_ClockDisplay::drawSetAlarm(uint8_t hourOne, uint8_t hourTwo, uint8_t minuteOne, uint8_t minuteTwo){
+    drawTextCentered(64, 60, "Set Alarm", 2, m_fgColor);
+    
+    char *firstHour = calloc(2, sizeof(char));
+    char *secondHour = calloc(2, sizeof(char));
+    char *firstMinute = calloc(2, sizeof(char));
+    char *secondMinute = calloc(2, sizeof(char));
+
+    itoa(hourOne, firstHour, 10);
+    itoa(hourTwo, secondHour, 10);
+    itoa(minuteOne, firstMinute, 10);
+    itoa(minuteTwo, secondMinute, 10);
+
+    char *displayValue = calloc(6, sizeof(char));
+
+    strcat(displayValue, firstHour);
+    strcat(displayValue, secondHour);
+    strcat(displayValue, ":");
+    strcat(displayValue, firstMinute);
+    strcat(displayValue, secondMinute);
+    
+    drawTextCentered(64, 80, displayValue, 2, m_fgColor);
+
+    free(firstHour);
+    free(secondHour);
+    free(firstMinute);
+    free(secondMinute);
+    free(displayValue);
+}
+
 void ST7335_AD_ClockDisplay::drawTextCentered(uint8_t x, uint8_t y, const char *string, uint8_t size, uint16_t color){
     if(string != NULL){
         m_screen.setTextColor(color);
@@ -323,19 +358,17 @@ void ST7335_AD_ClockDisplay::init(){
     m_screen.fillScreen(m_bgColor);
 }
 
-void ST7335_AD_ClockDisplay::setTime(uint8_t hour, uint8_t minute, uint8_t second, uint8_t day, uint8_t month, uint8_t year){
-    ::setTime(hour, minute, second, day, month, year);
-    m_timer = now();
-}
-
-void ST7335_AD_ClockDisplay::drawClock(){
-    // Update timers
+void ST7335_AD_ClockDisplay::setTime(uint8_t time_hour, uint8_t time_minute, uint8_t time_second, uint8_t time_day, uint8_t time_month, uint8_t time_year){
+    ::setTime(time_hour, time_minute, time_second, time_day, time_month, time_year);
     m_timer = now();
     m_currentSecond = second(m_timer);
     m_currentMinute = minute(m_timer);
     m_currentHour = hour(m_timer);
     m_currentDay = day(m_timer);
     m_currentWeekday = weekday(m_timer);
+}
+
+void ST7335_AD_ClockDisplay::drawClock(){
 
     // Draw each second
     if(m_currentSecond != m_lastSecond){
@@ -352,6 +385,22 @@ void ST7335_AD_ClockDisplay::drawClock(){
     m_lastHour = m_currentHour;
     m_lastDay = m_currentDay;
     m_lastWeekday = m_currentWeekday;
+}
+
+void ST7335_AD_ClockDisplay::drawActivatedAlarm(){
+    if(m_currentSecond % 2 == 0){
+        if(!m_screenCleared){
+            m_screen.fillScreen(m_bgColor);
+            drawTextCentered( 64, 80, "ALARM!", 3, m_fgColor);
+        }
+        m_screenCleared = true;
+    } else {
+        if(m_screenCleared){
+        m_screen.fillScreen(m_fgColor);
+        drawTextCentered( 64, 80, "ALARM!", 3, m_bgColor);
+        }
+        m_screenCleared = false;
+    }
 }
 
 void ST7335_AD_ClockDisplay::redraw(){

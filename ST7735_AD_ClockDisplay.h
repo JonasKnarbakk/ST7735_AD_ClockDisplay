@@ -23,7 +23,10 @@ class ST7335_AD_ClockDisplay{
 
         void init();
         void setTime(uint8_t hour, uint8_t minute, uint8_t second, uint8_t day, uint8_t month, uint8_t year);
+        void setAlarm(uint16_t hour, uint16_t minute);
         void drawClock();
+        void drawActivatedAlarm();
+        void drawSetAlarm(uint8_t hourOne, uint8_t hourTwo, uint8_t minuteOne, uint8_t minuteTwo);
         void redraw();
         void showAlarm();
         void hideAlarm();
@@ -56,7 +59,8 @@ class ST7335_AD_ClockDisplay{
 
         bool m_analog = false,
             m_alarm = false,
-            m_date = false;
+            m_date = false,
+            m_screenCleared = false;
 
         time_t m_timer;
 
