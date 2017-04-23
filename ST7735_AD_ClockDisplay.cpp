@@ -93,14 +93,14 @@ void ST7335_AD_ClockDisplay::drawWatchFace(uint8_t width, uint8_t height, uint8_
     m_screen.drawCircle(width/2, height/2, radius, color);
     
     // Hour ticks
-    for(uint8_t i = 0; i < 360; i+=30){
+    for(uint16_t i = 0; i < 360; i+=30){
         float angle = i;
 
         angle = (angle * 3.14159265359 / 180); // Convert degrees to radians
-        uint8_t x = (width/2+(sin(angle)*radius));
-        uint8_t y = (height/2-(cos(angle)*radius));
-        uint8_t x2 = (width/2+(sin(angle)*(radius-10)));
-        uint8_t y2 = (height/2-(cos(angle)*(radius-10)));
+        uint16_t x = (width/2+(sin(angle)*radius));
+        uint16_t y = (height/2-(cos(angle)*radius));
+        uint16_t x2 = (width/2+(sin(angle)*(radius-10)));
+        uint16_t y2 = (height/2-(cos(angle)*(radius-10)));
         
         // Hack for the misbehaving hour ticks
         if(i == 90){
@@ -136,11 +136,7 @@ void ST7335_AD_ClockDisplay::drawHand(uint8_t x, uint8_t y, float angle, uint8_t
     }
     
     angle = (angle * 3.14159265359 / 180); // Convert degrees to radians
-    if(index == 2){
-        Serial.println(angle);
-        Serial.print("Hour Value: ");
-        Serial.println(m_currentHour);
-    }
+
     uint8_t xDestination = (x+(sin(angle)*lenght));
     uint8_t yDestination = (y-(cos(angle)*lenght));
     
