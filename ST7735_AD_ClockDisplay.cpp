@@ -99,10 +99,11 @@ void ST7335_AD_ClockDisplay::drawWatchFace(uint8_t width, uint8_t height, uint8_
         angle = (angle * 3.14159265359 / 180); // Convert degrees to radians
         uint16_t x = (width/2+(sin(angle)*radius));
         uint16_t y = (height/2-(cos(angle)*radius));
+
         uint16_t x2 = (width/2+(sin(angle)*(radius-10)));
         uint16_t y2 = (height/2-(cos(angle)*(radius-10)));
         
-        // Hack for the misbehaving hour ticks
+        // Hack cause of bug in drawLine at certain degrees
         if(i == 90){
             x -= 10;
             x2 -= 10;
